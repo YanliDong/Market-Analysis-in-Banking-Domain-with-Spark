@@ -1,0 +1,168 @@
+ip-10-0-41-79 login: dongyanli2014gmail
+Password: 
+Last login: Sun Aug 22 06:33:51 on pts/276
+[dongyanli2014gmail@ip-10-0-41-79 ~]$ spark-shell
+Setting default log level to "ERROR".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+21/08/22 06:48:25 WARN cluster.YarnSchedulerBackend$YarnSchedulerEndpoint: Attempted to request executors before the AM has registered!
+21/08/22 06:48:25 WARN lineage.LineageWriter: Lineage directory /var/log/spark/lineage doesn't exist or is not writable. Lineage for this application will be disabled.
+Spark context available as 'sc' (master = yarn, app id = application_1622117371245_31487).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 2.4.0-cdh6.3.2
+      /_/
+         
+Using Scala version 2.11.12 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_144)
+Type in expressions to have them evaluated.
+Type :help for more information.
+scala> 
+scala> val bankDF = spark.read.option("inferSchema", "True").option("header", "True").csv("project/project1_outputfile.csv")
+21/08/22 06:48:41 WARN lineage.LineageWriter: Lineage directory /var/log/spark/lineage doesn't exist or is not writable. Lineage for this application will be disabled.
+bankDF: org.apache.spark.sql.DataFrame = [age: int, job: string ... 15 more fields]
+scala> import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.DataFrame
+scala> case class bank(age:Int, job:String, marital:String, education:String, defaultn:String, balance:Int, housing:String, loan:String, contact:String, day:Int, month: String, duration:Int, campaign:In
+t, pdays:Int, previous:Int, poutcome:String, y:String)
+defined class bank
+
+
+
+scala> bankDF.createOrReplaceTempView("bank")
+
+scala> 
+
+scala> val marketing_success_rate=spark.sql("select count(case when y= 'yes' then 1 end)/count(*)*100  as marketing_success_rate from bank").show()
++----------------------+                                                        
+|marketing_success_rate|
++----------------------+
+|    11.698480458295547|
++----------------------+
+
+marketing_success_rate: Unit = ()
+
+scala> 
+
+scala> val marketing_fail_rate=spark.sql("select count(case when y='no' then 1 end)/count(*)*100  as marketing_fail_rate from bank").show()
++-------------------+
+|marketing_fail_rate|
++-------------------+
+|  88.30151954170445|
++-------------------+
+
+marketing_fail_rate: Unit = ()
+
+scala> 
+
+scala> val maximum_age=spark.sql("select max(age) as maximum_age from bank").show() 
++-----------+
+|maximum_age|
++-----------+
+|         95|
++-----------+
+
+maximum_age: Unit = ()
+
+scala> 
+
+scala> val mean_age=spark.sql("select avg(age) as mean_age from bank").show()
++-----------------+
+|         mean_age|
++-----------------+
+|40.93621021432837|
++-----------------+
+
+mean_age: Unit = ()
+
+scala> 
+
+scala> val min_age=spark.sql("select min(age)  as minimum_age from bank").show()
++-----------+
+|minimum_age|
++-----------+
+|         18|
++-----------+
+
+min_age: Unit = ()
+
+scala> al ageRDD = sqlCtx.udf.register("ageRDD",(age:Int) => { if (age < 20)"Teen"else if (age > 20 && age <= 32) "Young"else if (age > 33 && age <= 55) "Middle Aged"else "Old"})
+<console>:26: error: not found: value al
+val $ires6 = al.ageRDD
+             ^
+<console>:24: error: not found: value al
+       al ageRDD = sqlCtx.udf.register("ageRDD",(age:Int) => { if (age < 20)"Teen"else if (age > 20 && age <= 32) "Young"else if (age > 33 && age <= 55) "Middle Aged"else "Old"})
+       ^
+
+scala> val ageRDD = sqlCtx.udf.register("ageRDD",(age:Int) => { if (age < 20)"Teen"else if (age > 20 && age <= 32) "Young"else if (age > 33 && age <= 55) "Middle Aged"else "Old"})
+<console>:24: error: not found: value sqlCtx
+       val ageRDD = sqlCtx.udf.register("ageRDD",(age:Int) => { if (age < 20)"Teen"else if (age > 20 && age <= 32) "Young"else if (age > 33 && age <= 55) "Middle Aged"else "Old"})
+                    ^
+
+scala> val ageRDD=spark.sql.udf.register("ageRDD",(age:Int) => { if (age < 20)"Teen"else if (age > 20 && age <= 32) "Young"else if (age > 33 && age <= 55) "Middle Aged"else "Old"})
+<console>:24: error: missing argument list for method sql in class SparkSession
+Unapplied methods are only converted to functions when a function type is expected.
+You can make this conversion explicit by writing `sql _` or `sql(_)` instead of `sql`.
+       val ageRDD=spark.sql.udf.register("ageRDD",(age:Int) => { if (age < 20)"Teen"else if (age > 20 && age <= 32) "Young"else if (age > 33 && age <= 55) "Middle Aged"else "Old"})
+                        ^
+
+scala> import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.SQLContext
+
+scala> import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.SQLContext
+
+
+
+scala>  import org.apache.spark.sql.functions.mean
+import org.apache.spark.sql.functions.mean
+
+
+scala> val ssb=new org.apache.spark.sql.SparkSession.Builder()
+ssb: org.apache.spark.sql.SparkSession.Builder = org.apache.spark.sql.SparkSession$Builder@13d32361
+
+scala> val sparkSession=ssb.getOrCreate()
+sparkSession: org.apache.spark.sql.SparkSession = org.apache.spark.sql.SparkSession@835f174
+
+scala> val sqlCtx=sparkSession.sqlContext;
+sqlCtx: org.apache.spark.sql.SQLContext = org.apache.spark.sql.SQLContext@f044be0
+
+scala> val ageRDD = sqlCtx.udf.register("ageRDD",(age:Int) => { if (age < 20)"Teen"else if (age > 20 && age <= 32) "Young"else if (age > 33 && age <= 55) "Middle Aged"else "Old"})
+ageRDD: org.apache.spark.sql.expressions.UserDefinedFunction = UserDefinedFunction(<function1>,StringType,Some(List(IntegerType)))
+
+scala> val banknewDF = bankDF.withColumn("age",ageRDD(bankDF("age")))
+banknewDF: org.apache.spark.sql.DataFrame = [age: string, job: string ... 15 more fields]
+
+
+scala>  banknewDF.createOrReplaceTempView("bank_new")
+
+scala> val age_target = spark.sql("select age, count(*) as number from bank_new where y='yes' group by age order by number desc ").show( )
++-----------+------+                                                            
+|        age|number|
++-----------+------+
+|Middle Aged|  2601|
+|      Young|  1539|
+|        Old|  1131|
+|       Teen|    18|
++-----------+------+
+
+age_target: Unit = ()
+
+scala> val ageInd = new org.apache.spark.ml.feature.StringIndexer().setInputCol("age").setOutputCol("ageIndex")
+ageInd: org.apache.spark.ml.feature.StringIndexer = strIdx_23d1330bafe6
+
+scala> var strIndModel = ageInd.fit(banknewDF)
+strIndModel: org.apache.spark.ml.feature.StringIndexerModel = strIdx_23d1330bafe6
+
+scala> strIndModel.transform(banknewDF).select("age","ageIndex").show(5)
++-----------+--------+
+|        age|ageIndex|
++-----------+--------+
+|        Old|     2.0|
+|Middle Aged|     0.0|
+|        Old|     2.0|
+|Middle Aged|     0.0|
+|        Old|     2.0|
++-----------+--------+
+only showing top 5 rows
